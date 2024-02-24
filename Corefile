@@ -1,0 +1,5 @@
+.:53 {
+  log
+  errors
+  hosts
+}

@@ -1,0 +1,13 @@
+no-syslog
+name = dns
+ip = 192.168.0.53/32
+command = dig -t A localhost @127.0.0.1 +short
+disable = /etc/exabgp/health_check_dns.disable
+up-execute = ip address add 192.168.0.53/32 dev lo
+down-execute = ip address del 192.168.0.53/32 dev lo
+disabled-execute = ip address del 192.168.0.53/32 dev lo
+withdraw-on-down
+interval = 5
+fast-interval = 1
+rise = 5
+fall = 2
