@@ -10,15 +10,12 @@ FROM debian:bookworm-slim
 # CoreDNS
 COPY --chown=root:root --from=build /tmp/coredns /usr/bin/
 RUN mkdir -p /etc/coredns
-COPY Corefile /etc/coredns
 
 # ExaBGP
 RUN apt-get update && apt-get install -y \
     iproute2 \
     dnsutils \
     exabgp
-COPY exabgp.conf /etc/exabgp
-COPY health_check_dns /etc/exabgp
 RUN mkfifo /run/exabgp/exabgp.in /run/exabgp/exabgp.out && \
     chmod 600 /run/exabgp/exabgp.in /run/exabgp/exabgp.out && \
     chown exabgp:exabgp /run/exabgp/exabgp.in /run/exabgp/exabgp.out

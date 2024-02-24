@@ -1,0 +1,35 @@
+version: '2.4'
+
+services:
+  rs:
+    build:
+      context: .
+    volumes:
+      - ./rs/exabgp.conf:/etc/exabgp/exabgp.conf
+    cap_add:
+      - NET_ADMIN
+    networks:
+      mgmt:
+        ipv4_address: 100.64.33.10
+        ipv6_address: fd76:926f:7de::10
+  server:
+    build:
+      context: .
+    volumes:
+      - ./Corefile:/etc/coredns/Corefile
+      - ./exabgp.conf:/etc/exabgp/exabgp.conf
+      - ./health_check_dns:/etc/exabgp/health_check_dns
+    cap_add:
+      - NET_ADMIN
+    networks:
+      mgmt:
+        ipv4_address: 100.64.33.20
+        ipv6_address: fd76:926f:7de::20
+
+networks:
+  mgmt:
+    enable_ipv6: true
+    ipam:
+      config:
+        - subnet: 100.64.33.0/24
+        - subnet: fd76:926f:7de::/48
