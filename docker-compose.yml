@@ -1,0 +1,39 @@
+version: '2.4'
+
+x-anycast-dns-config: &x-anycast-dns-config
+  build:
+    context: .
+  privileged: true
+  cap_add:
+    - NET_ADMIN
+
+services:
+  router:
+    <<: *x-anycast-dns-config
+    volumes:
+      - ./test/router.conf:/etc/exabgp/exabgp.conf
+    networks:
+      mgmt:
+        ipv4_address: 100.64.0.2
+        ipv6_address: fdcd:9464:8bad::2
+  server:
+    <<: *x-anycast-dns-config
+    volumes:
+      - ./test/Corefile:/etc/coredns/Corefile
+      - ./test/server.conf:/etc/exabgp/exabgp.conf
+      - ./test/health_check_dns:/etc/exabgp/health_checks/health_check_dns
+    ports:
+      - '5333:53'
+      - '5333:53/udp'
+    networks:
+      mgmt:
+        ipv4_address: 100.64.0.3
+        ipv6_address: fdcd:9464:8bad::3
+
+networks:
+  mgmt:
+    enable_ipv6: true
+    ipam:
+      config:
+        - subnet: 100.64.0.0/24
+        - subnet: fdcd:9464:8bad::/48
