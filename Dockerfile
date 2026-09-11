@@ -1,11 +1,11 @@
-FROM alpine:3.19.1 as build
+FROM alpine:3.24.1 as build
 
 # Obtain CoreDNS binary
 WORKDIR /tmp
-ADD https://github.com/coredns/coredns/releases/download/v1.11.1/coredns_1.11.1_linux_amd64.tgz ./coredns.tgz
+ADD https://github.com/coredns/coredns/releases/download/v1.14.7/coredns_1.14.7_linux_amd64.tgz ./coredns.tgz
 RUN tar xzvf coredns.tgz
 
-FROM alpine:3.19.1
+FROM alpine:3.24.1
 
 # CoreDNS
 COPY --chown=root:root --from=build /tmp/coredns /usr/bin/
