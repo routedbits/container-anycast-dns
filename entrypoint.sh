@@ -11,14 +11,15 @@ if [ -f /etc/exabgp/exabgp.conf ]; then
     if [ ! -p /run/exabgp.in ]; then mkfifo /run/exabgp.in; chmod 600 /run/exabgp.in; fi
     if [ ! -p /run/exabgp.out ]; then mkfifo /run/exabgp.out; chmod 600 /run/exabgp.out; fi
 
-    # Create env file
-    if [ ! -f /etc/exabgp/exabgp.env ]; then
-      exabgp --fi > /etc/exabgp/exabgp.env
-      # bind to all interfaces
-      sed -i "s/^bind = .*/bind = '0.0.0.0 ::'/" /etc/exabgp/exabgp.env 
-      # run as root (otherwise ip add commands wont work)
-      sed -i "s/^user = 'nobody'/user = 'root'/" /etc/exabgp/exabgp.env
-    fi
+    # Configure ExaBGP through the environment rather than an env file. Any
+    # setting can be given as exabgp_<section>_<key>, which avoids having to
+    # locate the env file inside the virtualenv.
+    #
+    # Run as root, otherwise the healthcheck's ip commands fail and ExaBGP
+    # cannot read the pipes created above.
+    export exabgp_daemon_user='root'
+    # Bind to all interfaces
+    export exabgp_tcp_bind='0.0.0.0 ::'
 
     # run 
     /opt/venv/bin/exabgp /etc/exabgp/exabgp.conf &
